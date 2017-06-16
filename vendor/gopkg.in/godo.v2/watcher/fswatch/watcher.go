@@ -212,12 +212,17 @@ func getWalker(w *Watcher, root string, addch chan<- *watchItem) func(string, os
 // DefaultIsIgnorePath checks whether a path is ignored. Currently defaults
 // to hidden files on *nix systems, ie they start with a ".".
 func ignorePathDefault(path string) bool {
-	if strings.HasPrefix(path, ".") || strings.Contains(path, "/.") {
+	if strings.HasPrefix(path, ".") || strings.Contains(strings.Replace(path, os.Getenv("GOPATH"), "", 1), "/.") {
 		return true
 	}
 
 	// ignore node
 	if strings.HasPrefix(path, "node_modules") || strings.Contains(path, "/node_modules") {
+		return true
+	}
+
+	// ignore go vendor
+	if strings.HasPrefix(path, "vendor") || strings.Contains(path, "/vendor") {
 		return true
 	}
 
